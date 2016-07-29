@@ -15,13 +15,16 @@ Part 1 GETs the XML, cleans it and POSTs the resulting JSON to part 2. Part 3 pu
 ## Get ready
 
 ```
-pip install -r requirements
+virtualenv .
+pip install -r requirements.txt
 
 # set up your secret variables
 cp mysettings.py.SAMPLE mysettings.py
+
+# edit!
 ```
 
-## Now run the Tornado server on 127.0.0.1:8888
+## Now run can the Tornado server on http://127.0.0.1:8888
 
 ```
 python app.py
@@ -34,4 +37,8 @@ python app.py
 python test.py
 ```
 
-try this link: [http://127.0.0.1:8888](http://127.0.0.1:8888)
+## See your results: [http://127.0.0.1:8888](http://127.0.0.1:8888)
+
+## Voilà!
+
+![screenshot](https://www.evernote.com/l/ADMi_5KFdtZDbJN39a-DIhkeCmPOyMAJyD8B/image.png)
