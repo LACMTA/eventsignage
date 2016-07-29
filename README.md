@@ -24,10 +24,12 @@ cp mysettings.py.SAMPLE mysettings.py
 # edit!
 ```
 
-## Now run can the Tornado server on http://127.0.0.1:8888
+## Now run can the Tornado server
 
 ```
 python app.py
+
+# defaults to 127.0.0.1:8888 -- this may not be what you want!
 ```
 
 ## open a new terminal window and send some test events
