@@ -10,11 +10,15 @@ There are three parts to this application:
 
 ![overview](./systemdiagram.png)
 
-Part one publishes current meetings scheduled in Outlook as an XML feed. Part 2 GETs the XML, parses and converts it to JSON then POSTs the JSON to part 3. Part 3 pushes content out to the clients over websockets.
+### Part 1 publishes current meetings scheduled in Outlook as an XML feed.
+### Part 2 GETs the XML, parses and converts it to JSON then POSTs the JSON to Part 3.
+### Part 3 pushes content out to the clients over websockets.
 
-## Get ready
+## Try it out.
 
 ```
+git clone https://github.com/LACMTA/eventsignage.git
+cd eventsignage
 virtualenv .
 pip install -r requirements.txt
 
@@ -26,9 +30,8 @@ cp mysettings.py.SAMPLE mysettings.py
 ## Now run can the Tornado server
 
 ```
+# start the server on 127.0.0.1:8888
 python app.py
-
-# defaults to 127.0.0.1:8888 -- this may not be what you want!
 ```
 
 ## open a new terminal window and send some test events
@@ -39,8 +42,9 @@ cd part_2 ;
 python fetch_parse_emit.py
 ```
 
-## See your results: [http://127.0.0.1:8888](http://127.0.0.1:8888)
+## [et voilà!](http://127.0.0.1:8888)
 
-## Voilà!
+You should now see random Metro-flavored events cycle in the browser. 
+
 
 ![screenshot](./Public_Meetings_and_branded_me.jpg)
