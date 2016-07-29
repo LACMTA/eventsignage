@@ -29,7 +29,7 @@ cp mysettings.py.SAMPLE mysettings.py
 
 ```
 
-## Now run can the Tornado server
+## Run Part 3: the Tornado API and websocket server
 
 ```
 # start the server on 127.0.0.1:8888
