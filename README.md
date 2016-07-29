@@ -4,13 +4,13 @@
 
 There are three parts to this application:
 
-1. Python XML parser and emitter
-2. JSON API
-3. Websocket server
+1. XML export from Outlook
+2. Python XML parser and JSON emitter
+3. JSON API and Websocket server
 
-![overview](https://www.evernote.com/l/ADNCiwiMsOxEXIcAEwLsMAhkvxAhaTB4l-wB/image.png)
+![overview](./systemdiagram.png)
 
-Part 1 GETs the XML, cleans it and POSTs the resulting JSON to part 2. Part 3 pushes content out to the clients over websockets. Note that parts 2 and 3 are combined into a single Tornado server.
+Part one publishes current meetings scheduled in Outlook as an XML feed. Part 2 GETs the XML, parses and converts it to JSON then POSTs the JSON to part 3. Part 3 pushes content out to the clients over websockets.
 
 ## Get ready
 
@@ -18,10 +18,9 @@ Part 1 GETs the XML, cleans it and POSTs the resulting JSON to part 2. Part 3 pu
 virtualenv .
 pip install -r requirements.txt
 
-# set up your secret variables
+# set up your secret variables by editing mysettings.py
 cp mysettings.py.SAMPLE mysettings.py
 
-# edit!
 ```
 
 ## Now run can the Tornado server
@@ -36,11 +35,12 @@ python app.py
 
 
 ```
-python test.py
+cd part_2 ;
+python fetch_parse_emit.py
 ```
 
 ## See your results: [http://127.0.0.1:8888](http://127.0.0.1:8888)
 
 ## Voilà!
 
-![screenshot](https://www.evernote.com/l/ADMi_5KFdtZDbJN39a-DIhkeCmPOyMAJyD8B/image.png)
+![screenshot](./Public_Meetings_and_branded_me.jpg)
