@@ -34,4 +34,4 @@ python app.py
 python test.py
 ```
 
-try this link: [127.0.0.1:8888](127.0.0.1:8888)
+try this link: [http://127.0.0.1:8888](http://127.0.0.1:8888)
