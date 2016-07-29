@@ -1,0 +1,14 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>{% for r in reservations %}
+  <Reservation>
+    <user_id>{{r.user_id}}</user_id>
+    <res_id>{{r.res_id}}</res_id>
+    <room_id>{{r.room_id}}</room_id>
+    <room_res_start_dt>{{r.start_dt}}</room_res_start_dt>
+    <room_res_end_dt>{{r.end_dt}}</room_res_end_dt>
+    <room_name>{{r.room_name}}</room_name>
+    <res_general_desc>{{r.general_desc}}</res_general_desc>
+    <res_activity_cd>{{r.activity_cd}}</res_activity_cd>
+    <code_table_item_cd>{{r.code_table_item_cd}}</code_table_item_cd>
+  </Reservation>{% endfor %}
+</DocumentElement>

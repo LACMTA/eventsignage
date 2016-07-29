@@ -7,3 +7,4 @@ simplejson==3.8.2
 singledispatch==3.4.0.3
 six==1.10.0
 tornado==4.4.1
+xmltodict==0.10.2
