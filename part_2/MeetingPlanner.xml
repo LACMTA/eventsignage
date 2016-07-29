@@ -2,89 +2,89 @@
 <DocumentElement>
   <Reservation>
     <user_id>71566</user_id>
-    <res_id>73063</res_id>
-    <room_id>175</room_id>
-    <room_res_start_dt>07/29/2016 08:00:00 PM</room_res_start_dt>
-    <room_res_end_dt>07/29/2016 09:00:00 PM</room_res_end_dt>
-    <room_name>Henry Huntington</room_name>
-    <res_general_desc>TEST! LAX Procurement Committee</res_general_desc>
-    <res_activity_cd>000</res_activity_cd>
-    <code_table_item_cd>000</code_table_item_cd>
-  </Reservation>
-  <Reservation>
-    <user_id>71566</user_id>
-    <res_id>11848</res_id>
-    <room_id>122</room_id>
-    <room_res_start_dt>07/29/2016 12:15:00 PM</room_res_start_dt>
-    <room_res_end_dt>07/29/2016 01:15:00 PM</room_res_end_dt>
-    <room_name>Union Station</room_name>
-    <res_general_desc>TEST! San Francisco Procurement Planning</res_general_desc>
-    <res_activity_cd>000</res_activity_cd>
-    <code_table_item_cd>000</code_table_item_cd>
-  </Reservation>
-  <Reservation>
-    <user_id>71566</user_id>
-    <res_id>50649</res_id>
-    <room_id>445</room_id>
-    <room_res_start_dt>07/29/2016 01:00:00 PM</room_res_start_dt>
-    <room_res_end_dt>07/29/2016 03:00:00 PM</room_res_end_dt>
+    <res_id>27969</res_id>
+    <room_id>581</room_id>
+    <room_res_start_dt>07/29/2016 07:15:00 PM</room_res_start_dt>
+    <room_res_end_dt>07/29/2016 09:15:00 PM</room_res_end_dt>
     <room_name>East LA</room_name>
+    <res_general_desc>TEST! Red Line Construction Committee</res_general_desc>
+    <res_activity_cd>000</res_activity_cd>
+    <code_table_item_cd>000</code_table_item_cd>
+  </Reservation>
+  <Reservation>
+    <user_id>71566</user_id>
+    <res_id>55358</res_id>
+    <room_id>424</room_id>
+    <room_res_start_dt>07/29/2016 11:00:00 AM</room_res_start_dt>
+    <room_res_end_dt>07/29/2016 01:00:00 PM</room_res_end_dt>
+    <room_name>Palos Verdes</room_name>
+    <res_general_desc>TEST! Art RFP Gripes</res_general_desc>
+    <res_activity_cd>000</res_activity_cd>
+    <code_table_item_cd>000</code_table_item_cd>
+  </Reservation>
+  <Reservation>
+    <user_id>71566</user_id>
+    <res_id>57912</res_id>
+    <room_id>601</room_id>
+    <room_res_start_dt>07/29/2016 04:45:00 PM</room_res_start_dt>
+    <room_res_end_dt>07/29/2016 05:45:00 PM</room_res_end_dt>
+    <room_name>Palos Verdes</room_name>
+    <res_general_desc>TEST! Cafeteria RFP EOL</res_general_desc>
+    <res_activity_cd>000</res_activity_cd>
+    <code_table_item_cd>000</code_table_item_cd>
+  </Reservation>
+  <Reservation>
+    <user_id>71566</user_id>
+    <res_id>29363</res_id>
+    <room_id>670</room_id>
+    <room_res_start_dt>07/29/2016 06:30:00 PM</room_res_start_dt>
+    <room_res_end_dt>07/29/2016 07:30:00 PM</room_res_end_dt>
+    <room_name>Sierra Madre</room_name>
+    <res_general_desc>TEST! Union Station RFP Planning</res_general_desc>
+    <res_activity_cd>000</res_activity_cd>
+    <code_table_item_cd>000</code_table_item_cd>
+  </Reservation>
+  <Reservation>
+    <user_id>71566</user_id>
+    <res_id>12455</res_id>
+    <room_id>881</room_id>
+    <room_res_start_dt>07/29/2016 11:00:00 AM</room_res_start_dt>
+    <room_res_end_dt>07/29/2016 12:00:00 PM</room_res_end_dt>
+    <room_name>Design Studio</room_name>
+    <res_general_desc>TEST! Gold Line RFP RFC</res_general_desc>
+    <res_activity_cd>000</res_activity_cd>
+    <code_table_item_cd>000</code_table_item_cd>
+  </Reservation>
+  <Reservation>
+    <user_id>71566</user_id>
+    <res_id>21368</res_id>
+    <room_id>420</room_id>
+    <room_res_start_dt>07/29/2016 06:45:00 PM</room_res_start_dt>
+    <room_res_end_dt>07/29/2016 08:45:00 PM</room_res_end_dt>
+    <room_name>Sierra Madre</room_name>
     <res_general_desc>TEST! Gold Line RFP Discussion</res_general_desc>
     <res_activity_cd>000</res_activity_cd>
     <code_table_item_cd>000</code_table_item_cd>
   </Reservation>
   <Reservation>
     <user_id>71566</user_id>
-    <res_id>82577</res_id>
-    <room_id>446</room_id>
-    <room_res_start_dt>07/29/2016 08:30:00 PM</room_res_start_dt>
-    <room_res_end_dt>07/29/2016 10:30:00 PM</room_res_end_dt>
+    <res_id>28779</res_id>
+    <room_id>477</room_id>
+    <room_res_start_dt>07/29/2016 08:15:00 PM</room_res_start_dt>
+    <room_res_end_dt>07/29/2016 10:15:00 PM</room_res_end_dt>
     <room_name>Sierra Madre</room_name>
-    <res_general_desc>TEST! San Francisco Upgrade Proposal</res_general_desc>
+    <res_general_desc>TEST! LAX RFP RFC</res_general_desc>
     <res_activity_cd>000</res_activity_cd>
     <code_table_item_cd>000</code_table_item_cd>
   </Reservation>
   <Reservation>
     <user_id>71566</user_id>
-    <res_id>81163</res_id>
-    <room_id>747</room_id>
-    <room_res_start_dt>07/29/2016 04:45:00 PM</room_res_start_dt>
-    <room_res_end_dt>07/29/2016 06:45:00 PM</room_res_end_dt>
-    <room_name>Palos Verdes</room_name>
-    <res_general_desc>TEST! Art Upgrade RFC</res_general_desc>
-    <res_activity_cd>000</res_activity_cd>
-    <code_table_item_cd>000</code_table_item_cd>
-  </Reservation>
-  <Reservation>
-    <user_id>71566</user_id>
-    <res_id>22992</res_id>
-    <room_id>737</room_id>
-    <room_res_start_dt>07/29/2016 05:15:00 PM</room_res_start_dt>
-    <room_res_end_dt>07/29/2016 07:15:00 PM</room_res_end_dt>
-    <room_name>Union Station</room_name>
-    <res_general_desc>TEST! San Francisco Closing Gripes</res_general_desc>
-    <res_activity_cd>000</res_activity_cd>
-    <code_table_item_cd>000</code_table_item_cd>
-  </Reservation>
-  <Reservation>
-    <user_id>71566</user_id>
-    <res_id>97927</res_id>
-    <room_id>964</room_id>
-    <room_res_start_dt>07/29/2016 06:45:00 PM</room_res_start_dt>
-    <room_res_end_dt>07/29/2016 07:45:00 PM</room_res_end_dt>
-    <room_name>Palos Verdes</room_name>
-    <res_general_desc>TEST! Union Station Procurement Gripes</res_general_desc>
-    <res_activity_cd>000</res_activity_cd>
-    <code_table_item_cd>000</code_table_item_cd>
-  </Reservation>
-  <Reservation>
-    <user_id>71566</user_id>
-    <res_id>69268</res_id>
-    <room_id>753</room_id>
-    <room_res_start_dt>07/29/2016 04:15:00 PM</room_res_start_dt>
-    <room_res_end_dt>07/29/2016 05:15:00 PM</room_res_end_dt>
+    <res_id>52025</res_id>
+    <room_id>738</room_id>
+    <room_res_start_dt>07/29/2016 11:45:00 AM</room_res_start_dt>
+    <room_res_end_dt>07/29/2016 12:45:00 PM</room_res_end_dt>
     <room_name>Board Room</room_name>
-    <res_general_desc>TEST! LAX Construction RFC</res_general_desc>
+    <res_general_desc>TEST! Cafeteria RFP Planning</res_general_desc>
     <res_activity_cd>000</res_activity_cd>
     <code_table_item_cd>000</code_table_item_cd>
   </Reservation>
