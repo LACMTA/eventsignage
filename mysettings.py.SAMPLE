@@ -1,0 +1,2 @@
+cookie_secret = "SECRET"
+sentry_key = 'https://blahblahblah@app.getsentry.com/12345'
