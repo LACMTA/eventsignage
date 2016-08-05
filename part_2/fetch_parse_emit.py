@@ -6,25 +6,54 @@ import xml.etree.ElementTree as ET
 import pytz
 import xmltodict
 import requests
+# from tzlocal import get_localzone -- use this if you're not sure about the local TZ
 from jinja2 import Template, Environment, FileSystemLoader
 
-DEBUG = True
+# set up all the variables
+DEBUG = False
 XML_URL = 'http://meetingplannerxml'
 xmlfile = 'MeetingPlanner.xml'
 timeout = 2 # seconds
 
-# thenow = datetime.now(pytz.timezone("America/Los_Angeles"))
-# TypeError: can't compare offset-naive and offset-aware datetimes
-thenow = datetime.now()
-todaydisplay = thenow.strftime("%B %d, %Y")
-
-signurl = "http://127.0.0.1:8888/api"
 local_tz = pytz.timezone('America/Los_Angeles') # use your local timezone name here
-timefmt = "%m/%d/%Y %I:%M:%S %p"
+UTC_tz = pytz.timezone('UTC')
+thenow = datetime.now(local_tz)
+thenow_utc = datetime.now(UTC_tz)
+# offset-naive and offset-aware datetimes ?
+# remove the timezone awareness, yuk!
+naive_utc = thenow_utc.replace(tzinfo=None)
 
-# def utc_to_local(utc_dt):
-#     local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
-#     return local_tz.normalize(local_dt) # .normalize might be unnecessary
+# TypeError: can't compare offset-naive and offset-aware datetimes
+# thenow = datetime.now()
+todaydisplay = thenow.strftime("%B %d, %Y")
+timefmt = "%m/%d/%Y %I:%M:%S %p"
+signurl = "http://127.0.0.1:8888/api"
+# signurl = "http://signage.metro.net/api"
+
+def parse_mptime(timestr="8/8/2016 1:00:00 PM", timefmt = "%m/%d/%Y %I:%M:%S %p"):
+    # MP time is UTC
+    timedict = {}
+    timedict["original"] = timestr
+    timedict["timefmt"] = timefmt
+    timedict["local_tz"] = pytz.timezone("America/Los_Angeles")
+    local_tz = pytz.timezone("America/Los_Angeles")
+    utc_tz = pytz.timezone ("UTC")
+    naive_time = datetime.strptime(timestr, timefmt)
+    mptime = utc_tz.localize(naive_time)
+    utc_time = utc_tz.localize(naive_time)
+    timedict["timestamp"] = time.mktime(utc_time.timetuple())
+    localtime = utc_time.astimezone(local_tz)
+    timedict["local"] = localtime
+    timedict["displaytime"] = timedict['local'].strftime('%I:%M %p')
+    timedict["displaydate"] = timedict['local'].strftime('%m/%d/%Y')
+    # is this time in the future?
+    utcnow = utc_tz.localize(datetime.utcnow())
+    timedict["isfuture"] = (utcnow <= utc_time)
+    # is this today?
+    localnow = local_tz.localize(datetime.now())
+    timedict["endstoday"] = (localnow.year,localnow.month,localnow.day) == (localtime.year,localtime.month,localtime.day)
+    return timedict
+
 
 def modification_date(afile):
     t = os.path.getmtime(afile)
@@ -53,68 +82,7 @@ def tidymeup(s):
     s = s.replace("\'", '')
     return s
 
-def write_testXML(xmlfile):
-    reservations = []
-    # set the start and end times
-    thenow = datetime.now()
-    curhour = thenow.hour
-    nowtup = (thenow.year,thenow.month,thenow.day,thenow.hour,thenow.minute,thenow.second,0,0,0)
-    nowt = time.strftime(timefmt, nowtup)
-    midnighttup = (thenow.year,thenow.month,thenow.day,23,59,59,0,0,0)
-    lastupdate = modification_date(xmlfile)
-
-    for i,e in enumerate( range(8) ):
-        # set up each test event
-        subjects = ["TAC","Gold Line","Red Line","Union Station","Cafeteria","Art","LAX","San Francisco",]
-        activities = ["Construction","Improvements","Upgrade", "Closing","RFP","Procurement","Planning","RFP"]
-        meetingtypes = ["Committee","Scoping","Planning","EOL", "Discussion","RFC","Proposal", "Gripes"]
-        rooms = ["Henry Huntington","Union Station","Board Room","Palos Verdes",
-                 "East LA","Design Studio","Sierra Madre"]
-
-        thetitle = "TEST! %s %s %s" %(choice(subjects),choice(activities),choice(meetingtypes))
-        randhour = randrange(curhour,21)
-        startmins = choice([0,15,30,45])
-        rduration = choice([1,2])
-        starttimetup = (thenow.year,thenow.month,thenow.day,randhour,startmins,0,0,0,0)
-        endtimetup = (thenow.year,thenow.month,thenow.day,(randhour+rduration),startmins,0,0,0,0)
-        start_dt = time.strftime(timefmt, starttimetup)
-        end_dt = time.strftime(timefmt, endtimetup)
-
-        # timestamps
-        now_ts = time.mktime(nowtup)
-        midnight_ts = time.mktime(midnighttup)
-        start_ts = time.mktime(starttimetup)
-        end_ts = time.mktime(endtimetup)
-
-        reservation = {
-            'order':i,
-            'user_id':'71566',
-            'res_id':randrange(11111,99999),
-            'room_id':randrange(111,999),
-            'start_dt':start_dt,
-            'end_dt':end_dt,
-            'room_name':choice(rooms),
-            'general_desc':thetitle,
-            'activity_cd':'000',
-            'code_table_item_cd':'000',
-            }
-        # Append the meeting "current" if the end time is today between now and 11:59pm)
-        if ( now_ts < end_ts < midnight_ts ):
-            reservations.append(reservation)
-    env = Environment(loader=FileSystemLoader('template'))
-    template = env.get_template('base.xml')
-    output_from_parsed_template = template.render(todaydisplay=todaydisplay,
-                                              reservations=reservations,
-                                             lastupdate=lastupdate)
-
-    with open(xmlfile, "w") as fh:
-        fh.write(output_from_parsed_template)
-    fh.close()
-
-    return xmlfile, modification_date(xmlfile)
-
 def gimme_json(xmlfile,todaydisplay,lastupdate):
-    thenow = datetime.now()
     updatestr = lastupdate.strftime("%B %d, %Y %I:%M %p")
     with open(xmlfile) as fd:
         doc = xmltodict.parse( tidymeup(fd.read()) )
@@ -133,23 +101,27 @@ def gimme_json(xmlfile,todaydisplay,lastupdate):
         r['order']=i
 
     # top off the list with empty data
-    empties = ( 8-len(reslist) )
+    empties = ( 16-len(reslist) )
     for i,e in enumerate( range(empties),100 ):
-        r=OrderedDict([(u'order', i), (u'user_id', None), (u'res_id', u''), (u'room_id', u''), (u'Expr1', None), (u'Expr2', u''), (u'Expr3', None), (u'room_res_start_dt', u''), (u'room_res_end_dt', u''), (u'room_name', u''), (u'res_general_desc', u''), (u'res_activity_cd', None), (u'code_table_item_cd', None)])
+        r=OrderedDict([(u'order', i), (u'user_id', None), (u'res_id', u''), (u'room_id', u''), (u'Expr1', None), (u'Expr2', u''), (u'Expr3', None), (u'room_res_start_dt', u''), (u'room_res_end_dt', u''), (u'ts', u''), (u'displaytime', u''),(u'room_name', u''), (u'res_general_desc', u''), (u'res_activity_cd', None), (u'code_table_item_cd', None)])
         reslist.append(r)
 
-    respackage = {'todaydisplay':todaydisplay,'current':[],'inprocess':[],'lastupdate':updatestr}
+    respackage = {'todaydisplay':todaydisplay,'current':[],'inprocess':[],'future':[],'lastupdate':updatestr}
     for er in reslist:
-        try:
-            end_dt   = datetime.strptime(er['room_res_end_dt'], timefmt)
-            current = (thenow < end_dt)
-            if current:
-                respackage['current'].append(er)
-        except:
-            # maybe no date was set?
-            pass
+        st_dict = parse_mptime(er['room_res_start_dt'])
+        et_dict = parse_mptime(er['room_res_end_dt'])
+        if (et_dict['isfuture']):
+            try:
+                er['displaytime'] = "%s - %s" %(st_dict['displaytime'], et_dict['displaytime'])
+                er['ts'] = st_dict['timestamp']
+                if et_dict['endstoday']:
+                    respackage['current'].append(er)
+                    print(er)
+            except:
+                # maybe no date was set?
+                pass
 
-        respackage['inprocess'].append(er)
+            respackage['inprocess'].append(er)
 
     return json.dumps(respackage)
 
@@ -165,6 +137,6 @@ while True:
         # DEBUG = True
 
     goj = gimme_json(xmlfile,todaydisplay,lastupdate)
-    print(goj)
+    # print(goj)
     r = requests.post( signurl, json=goj )
     time.sleep(15)  # Delay for 1 minute (60 seconds)
