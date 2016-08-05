@@ -83,3 +83,15 @@ h4 {
 .eventDescription h4 {
   font-style: italic;
 }
+
+/* http://stackoverflow.com/questions/18568736/how-to-hide-element-using-twitter-bootstrap-3-and-show-it-using-jquery */
+.show {
+  display: block !important;
+}
+.hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+.invisible {
+  visibility: hidden;
+}
