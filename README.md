@@ -36,7 +36,7 @@ cp mysettings.py.SAMPLE mysettings.py
 python app.py
 ```
 
-## Open a new terminal window and send some test events
+## Open a new terminal window and send some test events from Part 2.
 
 
 ```
