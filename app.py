@@ -1,4 +1,4 @@
-import os
+import os, time
 from datetime import datetime, date
 import pytz
 from tornado import websocket, web, ioloop, gen
@@ -7,7 +7,7 @@ from raven.contrib.tornado import AsyncSentryClient, SentryMixin
 # private variables
 from mysettings import cookie_secret, sentry_key
 
-local_tz = pytz.timezone('America/Los_Angeles') # use your local timezone name here
+DEBUG = False
 theclients = []
 settings = {
     "static_path": os.path.join(os.path.dirname(__file__), "static"),
@@ -62,7 +62,7 @@ class IndexHandler(SentryMixin, web.RequestHandler):
         self.captureMessage("Request for main page served")
         self.render("index.html")
 
-# original method
+
 class SocketHandler(websocket.WebSocketHandler):
 
     def check_origin(self, origin):
@@ -76,19 +76,8 @@ class SocketHandler(websocket.WebSocketHandler):
         if self in theclients:
             theclients.remove(self)
 
+
 class ApiHandler(web.RequestHandler):
-
-    def tidymeup(self, s):
-        s = s.replace('\r', '')
-        s = s.replace('\t', ' ')
-        s = s.replace('\f', ' ')
-        s = s.replace("\'", '')
-        return s
-
-    def utc_to_local(self,utc_dt):
-        local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
-        return local_tz.normalize(local_dt) # .normalize might be unnecessary
-
 
     @web.asynchronous
     def get(self, *args):
@@ -98,6 +87,7 @@ class ApiHandler(web.RequestHandler):
         value = self.get_argument("value")
         data = {"id": id, "value": value}
         data = json.dumps(data)
+
         for c in theclients:
             c.write_message(data)
 
@@ -109,37 +99,39 @@ class ApiHandler(web.RequestHandler):
 
         try:
             js = json.loads(json_data)
-            sorted_meetings = sorted(js['current'], key=lambda k: k['order'])
+            sorted_meetings = sorted(js['current'], key=lambda k: k['ts'])
         except ValueError:
             raise tornado.httpserver._BadRequestException(
                 "Invalid JSON structure."
             )
 
+        # display today
+        now = datetime.now()
+        dayint = datetime.now().day
+        if (4 <= dayint <= 20) or (24 <= dayint <= 30):
+            suffix = "th"
+        else:
+            suffix = ["st", "nd", "rd"][dayint % 10 - 1]
+        today = "%s %s%s, %s" % (now.strftime(
+            "%A %B"), dayint, suffix, datetime.now().year)
+
         mlist = []
         postme = True
-        for i, item in enumerate(sorted_meetings):
+        for i, item in enumerate(sorted_meetings[0:15]):
             try:
-                timefmt = "%m/%d/%Y %I:%M:%S %p"
-                today = date.today()
-                today_YMD = today.strftime("%Y_%m_%d")
-                print("----- item['room_res_start_dt'] -------")
-                print item['room_res_start_dt']
-                start_utc = datetime.strptime(item['room_res_start_dt'], timefmt)
-                end_utc   = datetime.strptime(item['room_res_end_dt'], timefmt)
-                start_dt = self.utc_to_local(start_utc).strftime(timefmt)
-                end_dt = self.utc_to_local(end_utc).strftime(timefmt)
-                myend_YMD = datetime.strptime(end_dt, timefmt).strftime("%Y_%m_%d")
-                if (today_YMD == myend_YMD):
-                    d = {}
-                    title = "title_%s" % i
-                    room = "room_%s" % i
-                    t = "time_%s" % i
-
-                    tstr = "%s - %s" % (start_dt,end_dt)
-                    d = {title: item['res_general_desc'],
-                         room: item['room_name'], t: tstr}
-                    mlist.append(d)
-
+                if item['res_general_desc'] == None:
+                    item['res_general_desc'] = "Untitled Meeting"
+                if DEBUG:
+                    print("------------" + item['res_general_desc'])
+                    print(item['room_name'])
+                    print(item['displaytime'])
+                d = {}
+                title = "title_%s" % i
+                room = "room_%s" % i
+                t = "time_%s" % i
+                d = {title: item['res_general_desc'],
+                     room: item['room_name'], t: item['displaytime']}
+                mlist.append(d)
             except:
                 postme = False
 
@@ -151,7 +143,9 @@ class ApiHandler(web.RequestHandler):
                         c.write_message(msg)
             # now, the metadata
             for c in theclients:
-                c.write_message({"id": "lastupdate", "value": js["lastupdate"]})
+                c.write_message(
+                    {"id": "lastupdate", "value": "last update: " + js["lastupdate"]})
+                c.write_message({"id": "display_today", "value": today})
 
 # 2. Create Tornado application
 app = web.Application([
