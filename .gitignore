@@ -10,3 +10,7 @@ bin/*
 *.xml
 share/*
 conf.pyc
+*.log
+.ipynb_checkpoints
+.elasticbeanstalk
+my_app
