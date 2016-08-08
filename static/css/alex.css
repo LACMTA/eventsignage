@@ -95,6 +95,21 @@ h4 {
 .invisible {
   visibility: hidden;
 }
-div:empty {
+/*div:empty {
+  display:none !important;
+}
+.mytitle:empty {
+  display:none !important;
+}
+.mydescription:empty {
+  display:none !important;
+}
+.container:empty {
+  display:none !important;
+}*/
+#time_0:empty, #time_1:empty, #time_2:empty, #time_3:empty, #time_4:empty, #time_5:empty, #time_6:empty, #time_7:empty, #time_8:empty, #time_9:empty, #time_10:empty, #time_11:empty, #time_12:empty, #time_13:empty, #time_14:empty, #time_15:empty, #time_16:empty {
+  display:none !important;
+  }
+#room_0:empty, #room_1:empty, #room_2:empty, #room_3:empty, #room_4:empty, #room_5:empty, #room_6:empty, #room_7:empty, #room_8:empty, #room_9:empty, #room_10:empty, #room_11:empty, #room_12:empty, #room_13:empty, #room_14:empty, #room_15:empty, #room_16:empty {
   display:none !important;
 }
