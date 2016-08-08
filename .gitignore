@@ -2,3 +2,9 @@
 mysettings.pyc
 /mysettings.py
 /.Python
+lib/*
+shared/*
+include/*
+bin/*
+
+*.xml
