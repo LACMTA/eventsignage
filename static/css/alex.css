@@ -95,3 +95,6 @@ h4 {
 .invisible {
   visibility: hidden;
 }
+div:empty {
+  display:none !important;
+}
