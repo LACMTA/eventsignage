@@ -148,4 +148,4 @@ while True:
     goj = gimme_json(xmlfile,todaydisplay,lastupdate)
     # print(goj)
     r = requests.post( signurl, json=goj )
-    time.sleep(15)  # Delay for 1 minute (60 seconds)
+    time.sleep(60)  # Delay for 1 minute (60 seconds)
