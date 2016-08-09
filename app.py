@@ -5,7 +5,7 @@ from tornado import websocket, web, ioloop, gen
 import simplejson as json
 from raven.contrib.tornado import AsyncSentryClient, SentryMixin
 # private variables
-from mysettings import cookie_secret, sentry_key
+from mysettings import cookie_secret, sentry_key, PORT
 
 DEBUG = False
 theclients = []
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)
 
     # 3. Make Tornado app listen on port
-    app.listen(port=8888, address='0.0.0.0')
+    app.listen(port=PORT, address='0.0.0.0')
 
     # 4. Start IOLoop
     ioloop.IOLoop.instance().start()
