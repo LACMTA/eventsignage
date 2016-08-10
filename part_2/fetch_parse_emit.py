@@ -1,4 +1,4 @@
-import re, urllib2, os, time, json
+import re, os, time, json
 from random import randrange, choice
 from datetime import datetime, timedelta
 from collections import OrderedDict
@@ -10,24 +10,21 @@ import requests
 from jinja2 import Template, Environment, FileSystemLoader
 # import rethinkdb as rdb
 
+from conf import SIGNURL, XML_URL, TIMEOUT, LOCAL_TZ, XMLFILE
+# rethinkdb settings
+# from conf import RDB_HOST,RDB_PORT,PROJECT_DB,PROJECT_TABLE
+
 # set up all the variables
 DEBUG = False
-XML_URL = 'http://meetingplannerxml'
-xmlfile = 'MeetingPlanner.xml'
-timeout = 2 # seconds
-PORT = 80
 # time
-local_tz = pytz.timezone('America/Los_Angeles') # use your local timezone name here
 UTC_tz = pytz.timezone('UTC')
-thenow = datetime.now(local_tz)
+thenow = datetime.now(LOCAL_TZ)
 thenow_utc = datetime.now(UTC_tz)
 # offset-naive and offset-aware datetimes ?
 # remove the timezone awareness, yuk!
 naive_utc = thenow_utc.replace(tzinfo=None)
 todaydisplay = thenow.strftime("%B %d, %Y")
 timefmt = "%m/%d/%Y %I:%M:%S %p"
-signurl = "http://mtasignage.lacmta.net:%s/api" %(PORT)
-# signurl = "http://signage.metro.net/api"
 
 # Connect to the RethinkDB server
 # RDB_HOST =  os.environ.get('RDB_HOST') or 'localhost'
@@ -41,14 +38,14 @@ def parse_mptime(timestr="8/8/2016 1:00:00 PM", timefmt = "%m/%d/%Y %I:%M:%S %p"
     timedict = {}
     timedict["original"] = timestr
     timedict["timefmt"] = timefmt
-    timedict["local_tz"] = pytz.timezone("America/Los_Angeles")
-    local_tz = pytz.timezone("America/Los_Angeles")
+    timedict["LOCAL_TZ"] = pytz.timezone("America/Los_Angeles")
+    LOCAL_TZ = pytz.timezone("America/Los_Angeles")
     utc_tz = pytz.timezone ("UTC")
     naive_time = datetime.strptime(timestr, timefmt)
     mptime = utc_tz.localize(naive_time)
     utc_time = utc_tz.localize(naive_time)
     timedict["timestamp"] = time.mktime(utc_time.timetuple())
-    localtime = utc_time.astimezone(local_tz)
+    localtime = utc_time.astimezone(LOCAL_TZ)
     timedict["local"] = localtime
     timedict["displaytime"] = timedict['local'].strftime('%I:%M %p')
     timedict["displaydate"] = timedict['local'].strftime('%m/%d/%Y')
@@ -57,7 +54,7 @@ def parse_mptime(timestr="8/8/2016 1:00:00 PM", timefmt = "%m/%d/%Y %I:%M:%S %p"
     utcnow = utc_tz.localize(datetime.utcnow())
     timedict["isfuture"] = (utcnow <= utc_time)
     # is this today?
-    localnow = local_tz.localize(datetime.now())
+    localnow = LOCAL_TZ.localize(datetime.now())
     timedict["endstoday"] = (localnow.year,localnow.month,localnow.day) == (localtime.year,localtime.month,localtime.day)
     return timedict
 
@@ -65,21 +62,21 @@ def modification_date(afile):
     t = os.path.getmtime(afile)
     return datetime.fromtimestamp(t)
 
-def fetchfile(XML_URL,timeout,xmlfile):
+def fetchfile(XML_URL,TIMEOUT,XMLFILE):
     try:
-        r = urllib2.urlopen(XML_URL, timeout=timeout)
-        if r.getcode() == 200:
-            with open(xmlfile, 'w') as f:
+        r = requests.get(XML_URL)
+        if r.status_code == 200:
+            with open(XMLFILE, 'w') as f:
                 # line belows downloads entire file to memory,
                 # and dumps it to file afterwards
-                f.write(r.read())
+                f.write(r.content)
             f.close()
-            msg = "Got it %s" %(xmlfile)
+            msg = "Got it %s" %(XMLFILE)
             print(msg)
-    except:
-        print("There was an urllib2.urlopen error")
+    except Exception as e:
+        print(print e.message, e.args)
 
-    return xmlfile, modification_date(xmlfile)
+    return XMLFILE, modification_date(XMLFILE)
 
 def tidymeup(s):
     s = s.replace('\r', '')
@@ -88,10 +85,10 @@ def tidymeup(s):
     s = s.replace("\'", '')
     return s
 
-# def gimme_json(xmlfile,todaydisplay,lastupdate,rdb):
-def gimme_json(xmlfile,todaydisplay,lastupdate):
+# def gimme_json(XMLFILE,todaydisplay,lastupdate,rdb):
+def gimme_json(XMLFILE,todaydisplay,lastupdate):
     updatestr = lastupdate.strftime("%B %d, %Y %I:%M %p")
-    with open(xmlfile) as fd:
+    with open(XMLFILE) as fd:
         doc = xmltodict.parse( tidymeup(fd.read()) )
 
     reservations_dict = doc[u'DocumentElement'][u'Reservation']
@@ -126,8 +123,9 @@ def gimme_json(xmlfile,todaydisplay,lastupdate):
                     respackage['current'].append(er)
                     # add it to rethinkdb
                     # rdb.db("meetings").table("current").insert(er).run(rdb_conn)
-            except:
-            #     # maybe no date was set?
+            except Exception as e:
+                # maybe no date was set?
+                print(print e.message, e.args)
                 pass
 
             respackage['inprocess'].append(er)
@@ -138,15 +136,10 @@ def gimme_json(xmlfile,todaydisplay,lastupdate):
 
 
 while True:
-    if DEBUG:
-        xmlfile,lastupdate = write_testXML(xmlfile)
-        # DEBUG = False
-    else:
-        xmlfile,lastupdate = fetchfile(XML_URL,timeout,xmlfile)
-        # DEBUG = True
+    XMLFILE,lastupdate = fetchfile(XML_URL,TIMEOUT,XMLFILE)
 
-    # goj = gimme_json(xmlfile,todaydisplay,lastupdate,rdb)
-    goj = gimme_json(xmlfile,todaydisplay,lastupdate)
+    # goj = gimme_json(XMLFILE,todaydisplay,lastupdate,rdb)
+    goj = gimme_json(XMLFILE,todaydisplay,lastupdate)
     # print(goj)
-    r = requests.post( signurl, json=goj )
+    r = requests.post( SIGNURL, json=goj )
     time.sleep(60)  # Delay for 1 minute (60 seconds)
