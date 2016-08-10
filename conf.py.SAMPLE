@@ -1,3 +1,5 @@
 cookie_secret = "SECRET"
 sentry_key = 'https://blahblahblah@app.getsentry.com/12345'
+# coordinate these settings with part_2/conf.py
+ADDRESS='0.0.0.0'
 PORT=80
