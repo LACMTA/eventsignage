@@ -5,7 +5,7 @@ from tornado import websocket, web, ioloop, gen
 import simplejson as json
 from raven.contrib.tornado import AsyncSentryClient, SentryMixin
 # private variables
-from mysettings import cookie_secret, sentry_key, PORT
+from conf import cookie_secret, sentry_key, PORT
 
 DEBUG = False
 theclients = []
@@ -132,7 +132,8 @@ class ApiHandler(web.RequestHandler):
                 d = {title: item['res_general_desc'],
                      room: item['room_name'], t: item['displaytime']}
                 mlist.append(d)
-            except:
+            except Exception as e:
+                # print(print e.message, e.args)
                 postme = False
 
         if (postme):
