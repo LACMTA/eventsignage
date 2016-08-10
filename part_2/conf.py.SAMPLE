@@ -1,8 +1,10 @@
 import os
 import pytz
 
-PORT=7777
+# coordinate these settings with app.py (or ../conf.py)
+PORT=80
 SIGNURL="http://127.0.0.1:%s/api" %(PORT)
+
 XML_URL = 'http://meetingplannerxml'
 TIMEOUT = 2 # seconds
 LOCAL_TZ = pytz.timezone('America/Los_Angeles') # use your local timezone name here
