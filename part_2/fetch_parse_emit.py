@@ -9,13 +9,13 @@ import requests
 # from tzlocal import get_localzone -- use this if you're not sure about the local TZ
 from jinja2 import Template, Environment, FileSystemLoader
 # import rethinkdb as rdb
-from mysettings import PORT
 
 # set up all the variables
 DEBUG = False
 XML_URL = 'http://meetingplannerxml'
 xmlfile = 'MeetingPlanner.xml'
 timeout = 2 # seconds
+PORT = 80
 # time
 local_tz = pytz.timezone('America/Los_Angeles') # use your local timezone name here
 UTC_tz = pytz.timezone('UTC')
@@ -26,7 +26,7 @@ thenow_utc = datetime.now(UTC_tz)
 naive_utc = thenow_utc.replace(tzinfo=None)
 todaydisplay = thenow.strftime("%B %d, %Y")
 timefmt = "%m/%d/%Y %I:%M:%S %p"
-signurl = "http://127.0.0.1:%s/api" %(PORT)
+signurl = "http://mtasignage.lacmta.net:%s/api" %(PORT)
 # signurl = "http://signage.metro.net/api"
 
 # Connect to the RethinkDB server
