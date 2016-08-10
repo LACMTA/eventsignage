@@ -133,7 +133,7 @@ class ApiHandler(web.RequestHandler):
                      room: item['room_name'], t: item['displaytime']}
                 mlist.append(d)
             except Exception as e:
-                # print(print e.message, e.args)
+                # print(e.message, e.args)
                 postme = False
 
         if (postme):

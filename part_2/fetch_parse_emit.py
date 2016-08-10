@@ -125,7 +125,7 @@ def gimme_json(XMLFILE,todaydisplay,lastupdate):
                     # rdb.db("meetings").table("current").insert(er).run(rdb_conn)
             except Exception as e:
                 # maybe no date was set?
-                print(print e.message, e.args)
+                print(.message, e.args)
                 pass
 
             respackage['inprocess'].append(er)
