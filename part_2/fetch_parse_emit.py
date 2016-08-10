@@ -74,7 +74,7 @@ def fetchfile(XML_URL,TIMEOUT,XMLFILE):
             msg = "Got it %s" %(XMLFILE)
             print(msg)
     except Exception as e:
-        print(print e.message, e.args)
+        print(e.message, e.args)
 
     return XMLFILE, modification_date(XMLFILE)
 
