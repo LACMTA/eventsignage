@@ -1,6 +1,8 @@
 import os
 import pytz
 
+# NOTE! the server app reads only one config file -- the one in the root.
+
 # coordinate these settings with app.py (or ../conf.py)
 PORT=80
 SIGNURL="http://127.0.0.1:%s/api" %(PORT)
