@@ -1,4 +1,4 @@
-import re, os, time, json
+import re, os, time, json, urllib2
 from random import randrange, choice
 from datetime import datetime, timedelta
 from collections import OrderedDict
@@ -64,19 +64,35 @@ def modification_date(afile):
 
 def fetchfile(XML_URL,TIMEOUT,XMLFILE):
     try:
-        r = requests.get(XML_URL)
-        if r.status_code == 200:
+        r = urllib2.urlopen(XML_URL, TIMEOUT=TIMEOUT)
+        if r.getcode() == 200:
             with open(XMLFILE, 'w') as f:
                 # line belows downloads entire file to memory,
                 # and dumps it to file afterwards
-                f.write(r.content)
+                f.write(r.read())
             f.close()
             msg = "Got it %s" %(XMLFILE)
             print(msg)
     except Exception as e:
         print(e.message, e.args)
 
-    return XMLFILE, modification_date(XMLFILE)
+    return xmlfile, modification_date(xmlfile)
+
+# def fetchfile(XML_URL,TIMEOUT,XMLFILE):
+#     try:
+#         r = requests.get(XML_URL)
+#         if r.status_code == 200:
+#             with open(XMLFILE, 'w') as f:
+#                 # line belows downloads entire file to memory,
+#                 # and dumps it to file afterwards
+#                 f.write(r.content)
+#             f.close()
+#             msg = "Got it %s" %(XMLFILE)
+#             print(msg)
+#     except Exception as e:
+#         print(e.message, e.args)
+#
+#     return XMLFILE, modification_date(XMLFILE)
 
 def tidymeup(s):
     s = s.replace('\r', '')
