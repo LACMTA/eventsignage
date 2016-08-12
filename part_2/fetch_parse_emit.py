@@ -35,6 +35,9 @@ timefmt = "%m/%d/%Y %I:%M:%S %p"
 
 def parse_mptime(timestr="8/8/2016 1:00:00 PM", timefmt = "%m/%d/%Y %I:%M:%S %p"):
     # MP time is UTC
+    if ( len(timestr) <10 ):
+        # this should NEVER HAPPEN except when somebody forgets to give an time
+        timestr = "1/01/2525 6:30:00 PM"
     timedict = {}
     timedict["original"] = timestr
     timedict["timefmt"] = timefmt
@@ -56,6 +59,7 @@ def parse_mptime(timestr="8/8/2016 1:00:00 PM", timefmt = "%m/%d/%Y %I:%M:%S %p"
     # is this today?
     localnow = LOCAL_TZ.localize(datetime.now())
     timedict["endstoday"] = (localnow.year,localnow.month,localnow.day) == (localtime.year,localtime.month,localtime.day)
+
     return timedict
 
 def modification_date(afile):
@@ -64,7 +68,7 @@ def modification_date(afile):
 
 def fetchfile(XML_URL,TIMEOUT,XMLFILE):
     try:
-        r = urllib2.urlopen(XML_URL, TIMEOUT=TIMEOUT)
+        r = urllib2.urlopen(XML_URL, timeout=TIMEOUT)
         if r.getcode() == 200:
             with open(XMLFILE, 'w') as f:
                 # line belows downloads entire file to memory,
@@ -153,7 +157,8 @@ def gimme_json(XMLFILE,todaydisplay,lastupdate):
 
 while True:
     XMLFILE,lastupdate = fetchfile(XML_URL,TIMEOUT,XMLFILE)
-
+    print("todaydisplay" + str(todaydisplay))
+    print("lastupdate" + str(lastupdate))
     # goj = gimme_json(XMLFILE,todaydisplay,lastupdate,rdb)
     goj = gimme_json(XMLFILE,todaydisplay,lastupdate)
     # print(goj)
