@@ -1,8 +1,7 @@
 import os
 import pytz
 
-# the server app reads only one config file -- the one in the root.
-from part_2.conf import *
+# NOTE! supervisord reads only one config file -- the one in the root.
 
 cookie_secret = "SECRET"
 sentry_key = 'https://blahblahblah@app.getsentry.com/12345'
@@ -25,3 +24,4 @@ RDB_HOST =  os.environ.get('RDB_HOST') or 'localhost'
 RDB_PORT = os.environ.get('RDB_PORT') or 28015
 PROJECT_DB = 'test'
 PROJECT_TABLE = 'test'
+POLLPERIOD = 25

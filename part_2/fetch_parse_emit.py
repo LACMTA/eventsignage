@@ -10,7 +10,7 @@ import requests
 from jinja2 import Template, Environment, FileSystemLoader
 # import rethinkdb as rdb
 
-from conf import SIGNURL, XML_URL, TIMEOUT, LOCAL_TZ, XMLFILE
+from conf import SIGNURL, XML_URL, TIMEOUT, LOCAL_TZ, XMLFILE, POLLPERIOD
 # rethinkdb settings
 # from conf import RDB_HOST,RDB_PORT,PROJECT_DB,PROJECT_TABLE
 
@@ -158,4 +158,4 @@ while True:
     goj = gimme_json(XMLFILE,todaydisplay,lastupdate)
     # print(goj)
     r = requests.post( SIGNURL, json=goj )
-    time.sleep(60)  # Delay for 1 minute (60 seconds)
+    time.sleep(POLLPERIOD)  # Delay for 1 minute (60 seconds)
