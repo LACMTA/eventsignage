@@ -32,6 +32,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 # logfile
 hdlr = logging.FileHandler('logs/fetcher.log')
+hdlr.setLevel(logging.WARNING)
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
 
