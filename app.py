@@ -122,9 +122,14 @@ class ApiHandler(web.RequestHandler):
                 if item['res_general_desc'] == None:
                     item['res_general_desc'] = "Untitled Meeting"
                 if DEBUG:
-                    print("------------" + item['res_general_desc'])
-                    print(item['room_name'])
-                    print(item['displaytime'])
+                    # logging
+                    logger.debug("------------" + item['res_general_desc'])
+                    logger.debug(item['room_name'])
+                    logger.debug(item['displaytime'])
+                    # logger.info(e.message, e.args)
+                    # logger.warn(e.message, e.args)
+                    # logger.error(e.message, e.args)
+                    # logger.critical(e.message, e.args)
                 d = {}
                 title = "title_%s" % i
                 room = "room_%s" % i
@@ -133,7 +138,13 @@ class ApiHandler(web.RequestHandler):
                      room: item['room_name'], t: item['displaytime']}
                 mlist.append(d)
             except Exception as e:
-                # print(e.message, e.args)
+                warningmsg = "%s | %s" %(e.message, e.args)
+                # logging
+                # logger.debug(warningmsg)
+                # logger.info(warningmsg)
+                logger.warn(warningmsg)
+                # logger.error(warningmsg)
+                # logger.critical(warningmsg)
                 postme = False
 
         if (postme):
@@ -164,8 +175,19 @@ app.sentry_client = AsyncSentryClient(
 
 # standlone server
 if __name__ == '__main__':
+    # create logger
     import logging
-    logging.getLogger().setLevel(logging.debug)
+    logger = logging.getLogger('server')
+    logger.setLevel(logging.WARNING)
+    # create console handler and set level to debug
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.WARNING)
+    # create log formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # add formatter to ch
+    ch.setFormatter(formatter)
+    # add ch to logger
+    logger.addHandler(ch)
 
     # 3. Make Tornado app listen on port
     app.listen(port=PORT, address=ADDRESS)

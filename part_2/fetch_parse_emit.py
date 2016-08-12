@@ -16,6 +16,21 @@ from conf import SIGNURL, XML_URL, TIMEOUT, LOCAL_TZ, XMLFILE, POLLPERIOD
 
 # set up all the variables
 DEBUG = False
+
+# create logger
+import logging
+logger = logging.getLogger('fetcher')
+logger.setLevel(logging.DEBUG)
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.WARNING)
+# create log formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# add formatter to ch
+ch.setFormatter(formatter)
+# add ch to logger
+logger.addHandler(ch)
+
 # time
 UTC_tz = pytz.timezone('UTC')
 thenow = datetime.now(LOCAL_TZ)
@@ -76,9 +91,15 @@ def fetchfile(XML_URL,TIMEOUT,XMLFILE):
                 f.write(r.read())
             f.close()
             msg = "Got it %s" %(XMLFILE)
-            print(msg)
+            logger.debug(msg)
     except Exception as e:
-        print(e.message, e.args)
+        warningmsg = "%s | %s" %(e.message, e.args)
+        # logging
+        # logger.debug(warningmsg)
+        # logger.info(warningmsg)
+        logger.warn(warningmsg)
+        # logger.error(warningmsg)
+        # logger.critical(warningmsg)
 
     return XMLFILE, modification_date(XMLFILE)
 
@@ -92,9 +113,9 @@ def fetchfile(XML_URL,TIMEOUT,XMLFILE):
 #                 f.write(r.content)
 #             f.close()
 #             msg = "Got it %s" %(XMLFILE)
-#             print(msg)
+#             logger.debug(goj)
 #     except Exception as e:
-#         print(e.message, e.args)
+#         logger.warn(e.message, e.args)
 #
 #     return XMLFILE, modification_date(XMLFILE)
 
@@ -144,8 +165,13 @@ def gimme_json(XMLFILE,todaydisplay,lastupdate):
                     # add it to rethinkdb
                     # rdb.db("meetings").table("current").insert(er).run(rdb_conn)
             except Exception as e:
-                # maybe no date was set?
-                print(e.message, e.args)
+                warningmsg = "%s | %s" %(e.message, e.args)
+                # logging
+                # logger.debug(warningmsg)
+                # logger.info(warningmsg)
+                logger.warn(warningmsg)
+                # logger.error(warningmsg)
+                # logger.critical(warningmsg)
                 pass
 
             respackage['inprocess'].append(er)
@@ -157,10 +183,21 @@ def gimme_json(XMLFILE,todaydisplay,lastupdate):
 
 while True:
     XMLFILE,lastupdate = fetchfile(XML_URL,TIMEOUT,XMLFILE)
-    print("todaydisplay" + str(todaydisplay))
-    print("lastupdate" + str(lastupdate))
+    logger.debug("todaydisplay" + str(todaydisplay))
+    logger.debug("lastupdate" + str(lastupdate))
     # goj = gimme_json(XMLFILE,todaydisplay,lastupdate,rdb)
     goj = gimme_json(XMLFILE,todaydisplay,lastupdate)
-    # print(goj)
-    r = requests.post( SIGNURL, json=goj )
+    logger.debug(goj)
+    try:
+        r = requests.post( SIGNURL, json=goj )
+    except requests.exceptions.ConnectionError:
+        blargh = "Connection refused"
+        # logging
+        # logger.debug(blargh)
+        # logger.info(blargh)
+        logger.warn(blargh)
+        # logger.error(blargh)
+        # logger.critical(blargh)
+        pass
+
     time.sleep(POLLPERIOD)  # Delay for 1 minute (60 seconds)
