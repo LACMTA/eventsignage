@@ -30,6 +30,10 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
+# logfile
+hdlr = logging.FileHandler('logs/fetcher.log')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr)
 
 # time
 UTC_tz = pytz.timezone('UTC')

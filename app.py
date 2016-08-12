@@ -3,11 +3,29 @@ from datetime import datetime, date
 import pytz
 from tornado import websocket, web, ioloop, gen
 import simplejson as json
-from raven.contrib.tornado import AsyncSentryClient, SentryMixin
+# the Metro Network won't allow the process to contact Sentry, ugh
+# from raven.contrib.tornado import AsyncSentryClient, SentryMixin
 # private variables
 from conf import cookie_secret, sentry_key, PORT, ADDRESS
 
-DEBUG = False
+# create logger
+import logging
+logger = logging.getLogger('server')
+logger.setLevel(logging.DEBUG)
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+# create log formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# add formatter to ch
+ch.setFormatter(formatter)
+# add ch to logger
+logger.addHandler(ch)
+# logfile
+hdlr = logging.FileHandler('logs/server.log')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr)
+
 theclients = []
 settings = {
     "static_path": os.path.join(os.path.dirname(__file__), "static"),
@@ -18,25 +36,29 @@ settings = {
 # raven/sentry stuff
 
 
-class UncaughtExceptionHandler(SentryMixin, web.RequestHandler):
+# class UncaughtExceptionHandler(SentryMixin, web.RequestHandler):
+class UncaughtExceptionHandler(web.RequestHandler):
 
     def get(self):
         1 / 0
 
 
-class AsyncMessageHandler(SentryMixin, web.RequestHandler):
+# class AsyncMessageHandler(SentryMixin, web.RequestHandler):
+class AsyncMessageHandler(web.RequestHandler):
 
     @web.asynchronous
     @gen.engine
     def get(self):
         self.write("You requested the main page")
         yield gen.Task(
-            self.captureMessage, "Request for main page served"
+            # self.captureMessage, "Request for main page served"
+            logger.info("Request for main page served")
         )
         self.finish()
 
 
-class AsyncExceptionHandler(SentryMixin, web.RequestHandler):
+# class AsyncExceptionHandler(SentryMixin, web.RequestHandler):
+class AsyncExceptionHandler(web.RequestHandler):
 
     @web.asynchronous
     @gen.engine
@@ -44,13 +66,16 @@ class AsyncExceptionHandler(SentryMixin, web.RequestHandler):
         try:
             raise ValueError()
         except Exception as e:
-            response = yield gen.Task(
-                self.captureException, exc_info=True
-            )
+            warningmsg = "%s | %s" %(e.message, e.args)
+            logger.info(warningmsg)
+            # response = yield gen.Task(
+            #     self.captureException, exc_info=True
+            # )
         self.finish()
 
 
-class IndexHandler(SentryMixin, web.RequestHandler):
+# class IndexHandler(SentryMixin, web.RequestHandler):
+class IndexHandler(web.RequestHandler):
     # SUPPORTED_METHODS = ("CONNECT", "GET", "HEAD", "POST", "DELETE", "PATCH", "PUT", "OPTIONS")
     SUPPORTED_METHODS = ("CONNECT", "GET", "HEAD", "OPTIONS")
 
@@ -59,7 +84,9 @@ class IndexHandler(SentryMixin, web.RequestHandler):
         self.finish()
 
     def get(self):
-        self.captureMessage("Request for main page served")
+        # self.captureMessage("Request for main page served")
+        # logging
+        logger.info("Request for main page served")
         self.render("index.html")
 
 
@@ -121,15 +148,16 @@ class ApiHandler(web.RequestHandler):
             try:
                 if item['res_general_desc'] == None:
                     item['res_general_desc'] = "Untitled Meeting"
-                if DEBUG:
-                    # logging
-                    logger.debug("------------" + item['res_general_desc'])
-                    logger.debug(item['room_name'])
-                    logger.debug(item['displaytime'])
-                    # logger.info(e.message, e.args)
-                    # logger.warn(e.message, e.args)
-                    # logger.error(e.message, e.args)
-                    # logger.critical(e.message, e.args)
+
+                # logging
+                logger.debug("------------" + item['res_general_desc'])
+                logger.debug(item['room_name'])
+                logger.debug(item['displaytime'])
+                # logger.info(e.message, e.args)
+                # logger.warn(e.message, e.args)
+                # logger.error(e.message, e.args)
+                # logger.critical(e.message, e.args)
+
                 d = {}
                 title = "title_%s" % i
                 room = "room_%s" % i
@@ -168,26 +196,13 @@ app = web.Application([
     (r'/(rest_api_example.png)', web.StaticFileHandler, {'path': './'}),
 ], **settings)
 
-app.sentry_client = AsyncSentryClient(
-    sentry_key
-)
+# app.sentry_client = AsyncSentryClient(
+#     sentry_key
+# )
 
 
 # standlone server
 if __name__ == '__main__':
-    # create logger
-    import logging
-    logger = logging.getLogger('server')
-    logger.setLevel(logging.WARNING)
-    # create console handler and set level to debug
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.WARNING)
-    # create log formatter
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    # add formatter to ch
-    ch.setFormatter(formatter)
-    # add ch to logger
-    logger.addHandler(ch)
 
     # 3. Make Tornado app listen on port
     app.listen(port=PORT, address=ADDRESS)
