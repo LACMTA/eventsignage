@@ -165,7 +165,7 @@ app.sentry_client = AsyncSentryClient(
 # standlone server
 if __name__ == '__main__':
     import logging
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.debug)
 
     # 3. Make Tornado app listen on port
     app.listen(port=PORT, address=ADDRESS)
