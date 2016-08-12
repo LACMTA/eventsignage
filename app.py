@@ -23,6 +23,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 # logfile
 hdlr = logging.FileHandler('logs/server.log')
+hdlr.setLevel(logging.WARNING)
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
 
@@ -36,24 +37,23 @@ settings = {
 # raven/sentry stuff
 
 
-# class UncaughtExceptionHandler(SentryMixin, web.RequestHandler):
-class UncaughtExceptionHandler(web.RequestHandler):
+# this is for Raven
+# class UncaughtExceptionHandler(web.RequestHandler):
+#
+#     def get(self):
+#         1 / 0
 
-    def get(self):
-        1 / 0
 
-
-# class AsyncMessageHandler(SentryMixin, web.RequestHandler):
 class AsyncMessageHandler(web.RequestHandler):
 
     @web.asynchronous
     @gen.engine
     def get(self):
         self.write("You requested the main page")
-        yield gen.Task(
-            # self.captureMessage, "Request for main page served"
-            logger.info("Request for main page served")
-        )
+        # yield gen.Task(
+        #     # self.captureMessage, "Request for main page served"
+        #     logger.info("Request for main page served")
+        # )
         self.finish()
 
 
@@ -93,15 +93,21 @@ class IndexHandler(web.RequestHandler):
 class SocketHandler(websocket.WebSocketHandler):
 
     def check_origin(self, origin):
+        logger.info("check_origin: " +repr(origin))
         return True
 
     def open(self):
         if self not in theclients:
+            logger.info("opened client: " +repr(self.get_status()))
             theclients.append(self)
 
     def on_close(self):
         if self in theclients:
+            logger.info("closed client: " +repr(self.get_status()))
             theclients.remove(self)
+
+    def on_message(self, message):
+        logger.info("message received: " +repr(message))
 
 
 class ApiHandler(web.RequestHandler):
@@ -203,6 +209,15 @@ app = web.Application([
 
 # standlone server
 if __name__ == '__main__':
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    # create log formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # add formatter to ch
+    ch.setFormatter(formatter)
+    # add ch to logger
+    logger.addHandler(ch)
+    logger.info("Tornado sign server server starting...")
 
     # 3. Make Tornado app listen on port
     app.listen(port=PORT, address=ADDRESS)
