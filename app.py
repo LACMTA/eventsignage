@@ -112,6 +112,8 @@ class SocketHandler(websocket.WebSocketHandler):
 
 class ApiHandler(web.RequestHandler):
 
+    from utils import getSuffix
+
     @web.asynchronous
     def get(self, *args):
         # curl "http://127.0.0.1:8888/api?id=9&value=Henry-Huntington"
@@ -141,10 +143,8 @@ class ApiHandler(web.RequestHandler):
         # display today
         now = datetime.now()
         dayint = datetime.now().day
-        if (4 <= dayint <= 20) or (24 <= dayint <= 30):
-            suffix = "th"
-        else:
-            suffix = ["st", "nd", "rd"][dayint % 10 - 1]
+        suffix = getSuffix(dayint):
+
         today = "%s %s%s, %s" % (now.strftime(
             "%A %B"), dayint, suffix, datetime.now().year)
 
@@ -159,16 +159,16 @@ class ApiHandler(web.RequestHandler):
                 logger.debug("------------" + item['res_general_desc'])
                 logger.debug(item['room_name'])
                 logger.debug(item['displaytime'])
-                # logger.info(e.message, e.args)
-                # logger.warn(e.message, e.args)
-                # logger.error(e.message, e.args)
-                # logger.critical(e.message, e.args)
 
                 d = {}
                 title = "title_%s" % i
                 room = "room_%s" % i
                 t = "time_%s" % i
-                room_floor = "%s %s" %(item['room_name'], item['room_floor'])
+                try:
+                    floorsfx = getSuffix( int(item['room_floor']) )
+                    room_floor = "%s %s %s floor" %(item['room_name'], item['room_floor'], floorsfx)
+                except:
+                    room_floor = "%s" %(item['room_name'])
                 d = {title: item['res_general_desc'],
                      room: room_floor,
                      t: item['displaytime'],
@@ -177,11 +177,7 @@ class ApiHandler(web.RequestHandler):
             except Exception as e:
                 warningmsg = "%s | %s" %(e.message, e.args)
                 # logging
-                # logger.debug(warningmsg)
-                # logger.info(warningmsg)
                 logger.warn(warningmsg)
-                # logger.error(warningmsg)
-                # logger.critical(warningmsg)
                 postme = False
 
         if (postme):
