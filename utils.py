@@ -1,4 +1,4 @@
-def getSuffix(n):
+def getSuffix(dayint):
     if (4 <= dayint <= 20) or (24 <= dayint <= 30):
         suffix = "th"
     else:

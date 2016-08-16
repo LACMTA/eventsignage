@@ -17,10 +17,10 @@ from conf import SIGNURL, XML_URL, TIMEOUT, LOCAL_TZ, XMLFILE, POLLPERIOD
 # create logger
 import logging
 logger = logging.getLogger('fetcher')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
 # create console handler and set level to debug
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+ch.setLevel(logging.WARNING)
 # create log formatter
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 # add formatter to ch
@@ -111,29 +111,9 @@ def fetchfile(XML_URL,TIMEOUT,XMLFILE):
     except Exception as e:
         warningmsg = "%s | %s" %(e.message, e.args)
         # logging
-        # logger.debug(warningmsg)
-        # logger.info(warningmsg)
         logger.warn(warningmsg)
-        # logger.error(warningmsg)
-        # logger.critical(warningmsg)
 
     return XMLFILE, modification_date(XMLFILE)
-
-# def fetchfile(XML_URL,TIMEOUT,XMLFILE):
-#     try:
-#         r = requests.get(XML_URL)
-#         if r.status_code == 200:
-#             with open(XMLFILE, 'w') as f:
-#                 # line belows downloads entire file to memory,
-#                 # and dumps it to file afterwards
-#                 f.write(r.content)
-#             f.close()
-#             msg = "Got it %s" %(XMLFILE)
-#             logger.debug(goj)
-#     except Exception as e:
-#         logger.warn(e.message, e.args)
-#
-#     return XMLFILE, modification_date(XMLFILE)
 
 def tidymeup(s):
     s = s.replace('\r', '')
@@ -199,13 +179,9 @@ def gimme_json(XMLFILE,todaydisplay,lastupdate):
                     # add it to rethinkdb
                     # rdb.db("meetings").table("current").insert(er).run(rdb_conn)
             except Exception as e:
-                warningmsg = "%s | %s" %(e.message, e.args)
                 # logging
-                # logger.debug(warningmsg)
-                # logger.info(warningmsg)
+                warningmsg = "%s | %s" %(e.message, e.args)
                 logger.warn(warningmsg)
-                # logger.error(warningmsg)
-                # logger.critical(warningmsg)
                 pass
 
             respackage['inprocess'].append(er)

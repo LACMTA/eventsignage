@@ -7,6 +7,7 @@ import simplejson as json
 # from raven.contrib.tornado import AsyncSentryClient, SentryMixin
 # private variables
 from conf import cookie_secret, sentry_key, PORT, ADDRESS
+from utils import getSuffix
 
 # create logger
 import logging
@@ -112,8 +113,6 @@ class SocketHandler(websocket.WebSocketHandler):
 
 class ApiHandler(web.RequestHandler):
 
-    from utils import getSuffix
-
     @web.asynchronous
     def get(self, *args):
         # curl "http://127.0.0.1:8888/api?id=9&value=Henry-Huntington"
@@ -165,9 +164,13 @@ class ApiHandler(web.RequestHandler):
                 t = "time_%s" % i
                 try:
                     floorsfx = getSuffix( int(item['room_floor']) )
-                    room_floor = "%s %s %s floor" %(item['room_name'], item['room_floor'], floorsfx)
-                except:
+                    room_floor = "%s %s%s floor" %(item['room_name'], item['room_floor'], floorsfx)
+                except Exception as e:
                     room_floor = "%s" %(item['room_name'])
+                    # logging
+                    warningmsg = "we don't know the floor for that room | %s | %s" %(e.message, e.args)
+                    logger.warn(warningmsg)
+
                 d = {title: item['res_general_desc'],
                      room: room_floor,
                      t: item['displaytime'],
