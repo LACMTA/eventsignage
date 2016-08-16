@@ -4,10 +4,10 @@ html, body {
 body {
   height: 100%;
   background: #fff none repeat scroll 0 0;
-  font: 100%/1.6 ff-scala-sans-web-n4, ff-scala-sans-web, Helvetica, Arial, Geneva, sans-serif;
+  font: 115%/1.6 ff-scala-sans-web-n4, ff-scala-sans-web, Lato, Helvetica, Arial, Geneva, sans-serif;
 }
 h1, h2, h3, h4, h5, h6 {
-  font-family: ff-scala-sans-web-n4, ff-scala-sans-web, Helvetica, Arial, Geneva, sans-serif;
+  font-family: ff-scala-sans-web-n4, ff-scala-sans-web, Lato, Helvetica, Arial, Geneva, sans-serif;
 }
 h1 {
   font-weight: 700;
@@ -15,14 +15,14 @@ h1 {
 }
 h2 {
   font-weight: 700;
-  font-size: 24px;
+  font-size: 29px;
 }
 h3 {
-  font-size: 18px;
+  font-size: 23px;
   top: 0;
 }
 h4 {
-  font-size: 18px;
+  font-size: 23px;
   font-style: italic;
 }
 #header {
@@ -71,7 +71,7 @@ h4 {
   /* The new syntax needed by standard-compliant browsers (Opera 12.1, IE 10, Firefox 16, Chrome 26, Safari 6.1), without prefix */
   background: linear-gradient(to right, rgba(109, 207, 246, .50), rgba(230, 246, 252, 0.5));
   font-weight: 700;
-  font-size: 24px;
+  font-size: 36px;
 }
 .mydescription {
   /* The old syntax, deprecated and prefixed, for old browsers */
