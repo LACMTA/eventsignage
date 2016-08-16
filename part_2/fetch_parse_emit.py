@@ -14,16 +14,13 @@ from conf import SIGNURL, XML_URL, TIMEOUT, LOCAL_TZ, XMLFILE, POLLPERIOD
 # rethinkdb settings
 # from conf import RDB_HOST,RDB_PORT,PROJECT_DB,PROJECT_TABLE
 
-# set up all the variables
-DEBUG = False
-
 # create logger
 import logging
 logger = logging.getLogger('fetcher')
 logger.setLevel(logging.DEBUG)
 # create console handler and set level to debug
 ch = logging.StreamHandler()
-ch.setLevel(logging.WARNING)
+ch.setLevel(logging.DEBUG)
 # create log formatter
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 # add formatter to ch
@@ -52,6 +49,20 @@ timefmt = "%m/%d/%Y %I:%M:%S %p"
 # RDB_DB = 'meetings'
 #
 # rdb_conn = rdb.connect(host=RDB_HOST, port=RDB_PORT, db=RDB_DB)
+
+def getFloor(aroom):
+    rooms = {
+        'William Mulholland':15,
+        'Library':15,
+        'Union Station':3,
+        'Gateway':3,
+        'Henry Huntington':3,
+        'University':4,
+        }
+    if (aroom in rooms):
+        return rooms[aroom]
+    else:
+        return None
 
 def parse_mptime(timestr="8/8/2016 1:00:00 PM", timefmt = "%m/%d/%Y %I:%M:%S %p"):
     # MP time is UTC
@@ -153,12 +164,30 @@ def gimme_json(XMLFILE,todaydisplay,lastupdate):
     # top off the list with empty data
     empties = ( 16-len(reslist) )
     for i,e in enumerate( range(empties),100 ):
-        r=OrderedDict([(u'order', i), (u'id', u''), (u'user_id', None), (u'res_id', u''), (u'room_id', u''), (u'Expr1', None), (u'Expr2', u''), (u'Expr3', None), (u'room_res_start_dt', u''), (u'room_res_end_dt', u''), (u'ts', u''), (u'displaytime', u''),(u'room_name', u''), (u'res_general_desc', u''), (u'res_activity_cd', None), (u'code_table_item_cd', None)])
+        r=OrderedDict([(u'order', i),
+            (u'id', u''),
+            (u'user_id', None),
+            (u'res_id', u''),
+            (u'room_id', u''),
+            (u'Expr1', None),
+            (u'Expr2', u''),
+            (u'Expr3', None),
+            (u'room_res_start_dt', u''),
+            (u'room_res_end_dt', u''),
+            (u'ts', u''),
+            (u'displaytime', u''),
+            (u'room_floor', None),
+            (u'room_name', u''),
+            (u'res_general_desc', u''),
+            (u'res_activity_cd', None),
+            (u'code_table_item_cd', None),
+            ])
         reslist.append(r)
 
     respackage = {'todaydisplay':todaydisplay,'current':[],'inprocess':[],'future':[],'lastupdate':updatestr}
     for er in reslist:
         er['id'] = er['res_id']
+        er['room_floor'] = getFloor(er['room_name'])
         st_dict = parse_mptime(er['room_res_start_dt'])
         et_dict = parse_mptime(er['room_res_end_dt'])
         if (et_dict['isfuture']):
@@ -184,8 +213,6 @@ def gimme_json(XMLFILE,todaydisplay,lastupdate):
     return json.dumps(respackage)
 
 
-
-
 while True:
     XMLFILE,lastupdate = fetchfile(XML_URL,TIMEOUT,XMLFILE)
     logger.debug("todaydisplay" + str(todaydisplay))
@@ -197,12 +224,7 @@ while True:
         r = requests.post( SIGNURL, json=goj )
     except requests.exceptions.ConnectionError:
         blargh = "Connection refused"
-        # logging
-        # logger.debug(blargh)
-        # logger.info(blargh)
         logger.warn(blargh)
-        # logger.error(blargh)
-        # logger.critical(blargh)
         pass
 
     time.sleep(POLLPERIOD)  # Delay for 1 minute (60 seconds)

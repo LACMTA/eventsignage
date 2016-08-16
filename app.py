@@ -168,8 +168,11 @@ class ApiHandler(web.RequestHandler):
                 title = "title_%s" % i
                 room = "room_%s" % i
                 t = "time_%s" % i
+                room_floor = "%s %s" %(item['room_name'], item['room_floor'])
                 d = {title: item['res_general_desc'],
-                     room: item['room_name'], t: item['displaytime']}
+                     room: room_floor,
+                     t: item['displaytime'],
+                     }
                 mlist.append(d)
             except Exception as e:
                 warningmsg = "%s | %s" %(e.message, e.args)
