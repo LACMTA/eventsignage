@@ -143,8 +143,7 @@ class ApiHandler(web.RequestHandler):
         # display today
         now = datetime.now()
         dayint = datetime.now().day
-        suffix = getSuffix(dayint):
-
+        suffix = getSuffix(dayint)
         today = "%s %s%s, %s" % (now.strftime(
             "%A %B"), dayint, suffix, datetime.now().year)
 
