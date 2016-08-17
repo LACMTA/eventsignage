@@ -164,7 +164,7 @@ class ApiHandler(web.RequestHandler):
                 t = "time_%s" % i
                 try:
                     floorsfx = getSuffix( int(item['room_floor']) )
-                    room_floor = "%s %s%s floor" %(item['room_name'], item['room_floor'], floorsfx)
+                    room_floor = "%s, %s%s floor" %(item['room_name'], item['room_floor'], floorsfx)
                 except Exception as e:
                     room_floor = "%s" %(item['room_name'])
                     # logging
