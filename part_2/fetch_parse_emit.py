@@ -8,9 +8,11 @@ import xmltodict
 import requests
 # from tzlocal import get_localzone -- use this if you're not sure about the local TZ
 from jinja2 import Template, Environment, FileSystemLoader
+from utils import getFloor
 # import rethinkdb as rdb
 
 from conf import SIGNURL, XML_URL, TIMEOUT, LOCAL_TZ, XMLFILE, POLLPERIOD
+
 # rethinkdb settings
 # from conf import RDB_HOST,RDB_PORT,PROJECT_DB,PROJECT_TABLE
 
@@ -50,19 +52,6 @@ timefmt = "%m/%d/%Y %I:%M:%S %p"
 #
 # rdb_conn = rdb.connect(host=RDB_HOST, port=RDB_PORT, db=RDB_DB)
 
-def getFloor(aroom):
-    rooms = {
-        'William Mulholland':15,
-        'Library':15,
-        'Union Station':3,
-        'Gateway':3,
-        'Henry Huntington':3,
-        'University':4,
-        }
-    if (aroom in rooms):
-        return rooms[aroom]
-    else:
-        return None
 
 def parse_mptime(timestr="8/8/2016 1:00:00 PM", timefmt = "%m/%d/%Y %I:%M:%S %p"):
     # MP time is UTC
