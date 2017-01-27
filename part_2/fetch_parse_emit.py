@@ -78,7 +78,7 @@ def fixbuffertime(room_name,room_res_start_dt,room_res_end_dt):
     # some rooms add a buffer time to the meeting reservation.
     # we don't want to display the buffer times
     # time format = "1/3/2017 7:30:00 PM"
-    buffer_rms = ['Plaza View','University','Henry Huntington','Union Station','Gateway','William Mulholland']
+    buffer_rms = ['Plaza View','University','Henry Huntington','Union Station','Gateway','William Mullholland']
     timefmt = "%m/%d/%Y %I:%M:%S %p"
     if any(rm in room_name for rm in buffer_rms):
         newstart =  datetime.strptime(room_res_start_dt, timefmt) + timedelta(minutes=30)
