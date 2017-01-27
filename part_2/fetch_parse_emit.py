@@ -9,12 +9,8 @@ import requests
 # from tzlocal import get_localzone -- use this if you're not sure about the local TZ
 from jinja2 import Template, Environment, FileSystemLoader
 from utils import getFloor
-# import rethinkdb as rdb
 
 from conf import SIGNURL, XML_URL, TIMEOUT, LOCAL_TZ, XMLFILE, POLLPERIOD
-
-# rethinkdb settings
-# from conf import RDB_HOST,RDB_PORT,PROJECT_DB,PROJECT_TABLE
 
 # create logger
 import logging
@@ -44,14 +40,6 @@ thenow_utc = datetime.now(UTC_tz)
 naive_utc = thenow_utc.replace(tzinfo=None)
 todaydisplay = thenow.strftime("%B %d, %Y")
 timefmt = "%m/%d/%Y %I:%M:%S %p"
-
-# Connect to the RethinkDB server
-# RDB_HOST =  os.environ.get('RDB_HOST') or 'localhost'
-# RDB_PORT = os.environ.get('RDB_PORT') or 28015
-# RDB_DB = 'meetings'
-#
-# rdb_conn = rdb.connect(host=RDB_HOST, port=RDB_PORT, db=RDB_DB)
-
 
 def parse_mptime(timestr="8/8/2016 1:00:00 PM", timefmt = "%m/%d/%Y %I:%M:%S %p"):
     # MP time is UTC
@@ -85,6 +73,19 @@ def parse_mptime(timestr="8/8/2016 1:00:00 PM", timefmt = "%m/%d/%Y %I:%M:%S %p"
 def modification_date(afile):
     t = os.path.getmtime(afile)
     return datetime.fromtimestamp(t)
+
+def fixbuffertime(room_name,room_res_start_dt,room_res_end_dt):
+    # some rooms add a buffer time to the meeting reservation.
+    # we don't want to display the buffer times
+    # time format = "1/3/2017 7:30:00 PM"
+    buffer_rms = ['Plaza View','University','Henry Huntington','Union Station','Gateway','William Mulholland']
+    timefmt = "%m/%d/%Y %I:%M:%S %p"
+    if any(rm in room_name for rm in buffer_rms):
+        newstart =  datetime.strptime(room_res_start_dt, timefmt) + timedelta(minutes=30)
+        newend =    datetime.strptime(room_res_end_dt, timefmt) - timedelta(minutes=30)
+        return room_name,newstart.strftime(timefmt),newend.strftime(timefmt)
+    else:
+        return room_name,room_res_start_dt,room_res_end_dt
 
 def fetchfile(XML_URL,TIMEOUT,XMLFILE):
     try:
@@ -155,18 +156,17 @@ def gimme_json(XMLFILE,todaydisplay,lastupdate):
 
     respackage = {'todaydisplay':todaydisplay,'current':[],'inprocess':[],'future':[],'lastupdate':updatestr}
     for er in reslist:
+        room_name,room_res_start_dt,room_res_end_dt = fixbuffertime(er['room_name'],er['room_res_start_dt'],er['room_res_end_dt'])
         er['id'] = er['res_id']
-        er['room_floor'] = getFloor(er['room_name'])
-        st_dict = parse_mptime(er['room_res_start_dt'])
-        et_dict = parse_mptime(er['room_res_end_dt'])
+        er['room_floor'] = getFloor(room_name)
+        st_dict = parse_mptime(room_res_start_dt)
+        et_dict = parse_mptime(room_res_end_dt)
         if (et_dict['isfuture']):
             try:
                 er['displaytime'] = "%s - %s" %(st_dict['displaytime'], et_dict['displaytime'])
                 er['ts'] = st_dict['timestamp']
                 if et_dict['endstoday']:
                     respackage['current'].append(er)
-                    # add it to rethinkdb
-                    # rdb.db("meetings").table("current").insert(er).run(rdb_conn)
             except Exception as e:
                 # logging
                 warningmsg = "%s | %s" %(e.message, e.args)
