@@ -10,7 +10,7 @@ docker-py==1.7.2
 dockerpty==0.4.1
 docopt==0.6.2
 docutils==0.12
-Jinja2==2.8
+Jinja2==2.11.3
 jmespath==0.9.0
 MarkupSafe==0.23
 pathspec==0.3.4
