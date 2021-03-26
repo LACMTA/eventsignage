@@ -16,7 +16,7 @@ MarkupSafe==0.23
 pathspec==0.3.4
 python-dateutil==2.5.3
 pytz==2016.6.1
-PyYAML==3.11
+PyYAML==5.4
 raven==5.23.0
 requests==2.9.1
 rethinkdb==2.3.0.post5
